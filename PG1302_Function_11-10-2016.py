@@ -40,6 +40,7 @@ def Iteration_function(Data, number, Output_figs):
 
     #Define a new list to place the editted data into
     New_list = []
+    New_array = np.empty([290,1], dtype=float)
 
     if number==0:
         #Build LSF model and generate file paths
@@ -57,7 +58,9 @@ def Iteration_function(Data, number, Output_figs):
             fig.savefig(file_path_org, bbox_inches='tight')
 
         #Build original model
-        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=290)
+        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=10)
+
+        print(Mag_orgs.shape)
 
         #Plot the original LSF model
         if Output_figs == 1:
@@ -83,16 +86,17 @@ def Iteration_function(Data, number, Output_figs):
     #Select the Mag data and apply random gaussian
     for i in range(Data.Mag.count()):
         newvalue = random.gauss(Data['Mag'].iloc[[i]], Data['Magerr'].iloc[[i]])
-        New_list.append(float(newvalue))
+        New_array[i,0] = newvalue
+        #New_list.append(float(newvalue))
 
     #Create numpy array from the list, for L-S model input
-    New_list_array = np.array(New_list)
+    print(New_array)
 
     #Build L-S model
-    model = LombScargleFast().fit(Times, New_list_array, Errors)
+    model = LombScargleFast().fit(Times, New_array, Errors)
 
     #Apply the LS mechanism to the data
-    periods, power = model.periodogram_auto(nyquist_factor=290)
+    periods, power = model.periodogram_auto(nyquist_factor=10)
     file_path = 'C:/Users/User/Documents/University/Year 4/Project/Iteration_figures_11-10-2016/LSF_' + str(number) + '.jpg'
     file_path2 = 'C:/Users/User/Documents/University/Year 4/Project/Iteration_figures_11-10-2016/Light_Curve_' + str(number) + '.jpg'
     iteration_title = 'PG1302-102 Light Curve with Red Noise iteration ' + str(number)
@@ -100,7 +104,7 @@ def Iteration_function(Data, number, Output_figs):
     #Plotting the Light Curve using seaborn style
     if Output_figs == 1:
         fig, ax = plt.subplots()
-        ax.errorbar(Times, New_list_array, Errors, fmt='.k', color="r", ecolor='gray', label='Light Curve')
+        ax.errorbar(Times, New_array, Errors, fmt='.k', color="r", ecolor='gray', label='Light Curve')
         ax.set(xlabel='Time (MJD)', ylabel='Magitude',
             title=iteration_title)
         ax.invert_yaxis();
@@ -122,7 +126,7 @@ def Iteration_function(Data, number, Output_figs):
         model.optimizer.period_range=(500, 2000)
         period = model.best_period
 
-    print(period)
+    #print(period)
 
     return period
 
