@@ -53,14 +53,14 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
         file_path_org2 = file_loc + '/LSF_org_' + Object + '.jpg'
 
         #Build original model
-        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=10)
+        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=len(Data),oversampling=50)
 
         #Create Light Curve
         if Output_figs == 1:
             fig, ax = plt.subplots()
             ax.errorbar(Times, Mag_orgs, Errors, fmt='.k', color="r", ecolor='gray')
             ax.set(xlabel='Time', ylabel='Magitude',
-                title='PG1302-102 Light Curve Original')
+                title= Object +' Light Curve Original')
             ax.invert_yaxis();
             fig.savefig(file_path_org, bbox_inches='tight')
 
@@ -70,7 +70,7 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
             ax.set(xlim=(0, 2000),
                     xlabel='Period (Days)',
                     ylabel='Lomb-Scargle Power',
-                    title='LS Power against period plot');
+                    title=Object + ' LS Power against period plot');
             fig.savefig(file_path_org2, bbox_inches='tight')
 
 
@@ -78,7 +78,7 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
         if power_orig.max() < 0.1:
             periods_orig = 0
         else:
-            model_original.optimizer.period_range=(500, 2000)
+            model_original.optimizer.period_range=(100, 2000)
             periods_orig = model_original.best_period
 
         #Read best period out
@@ -93,19 +93,18 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
     model = LombScargleFast().fit(Times, New_array, Errors)
 
     #Apply the LS mechanism to the data
-    periods, power = model.periodogram_auto(nyquist_factor=10, oversampling=50)
-    file_path = file_loc + '/LSF_' + Object + '_' + str(number) + '.jpg'
-    file_path2 = file_loc + '/Light_Curve_' + Object + '_' + str(number) + '.jpg'
-    iteration_title = Object + 'Light Curve with Red Noise iteration ' + str(number)
+    periods, power = model.periodogram_auto(nyquist_factor=len(Data), oversampling=50)
+    file_path_Light_Curve = file_loc + '/Light_Curve_' + Object + '_' + str(number) + '.jpg'
+    file_path_LS_model = file_loc + '/LSF_' + Object + '_' + str(number) + '.jpg'
 
     #Plotting the Light Curve using seaborn style
     if Output_figs == 1:
         fig, ax = plt.subplots()
         ax.errorbar(Times, New_array, Errors, fmt='.k', color="r", ecolor='gray', label='Light Curve')
         ax.set(xlabel='Time (MJD)', ylabel='Magitude',
-            title=iteration_title)
+            title=Object + ' Light Curve with Red Noise iteration ' + str(number))
         ax.invert_yaxis();
-        fig.savefig(file_path2, bbox_inches='tight')
+        fig.savefig(file_path_Light_Curve, bbox_inches='tight')
 
         #Plotting the LS model
         fig, ax = plt.subplots()
@@ -114,13 +113,13 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
                 xlabel='Period (Days)',
                 ylabel='Lomb-Scargle Power',
                 title=Object + ' LS Power against period plot');
-        fig.savefig(file_path, bbox_inches='tight')
+        fig.savefig(file_path_LS_model, bbox_inches='tight')
 
     #Calculating the best period of the model, condition on quality of LSF model
     if power.max() < 0.1:
         period = 0
     else:
-        model.optimizer.period_range=(500, 2000)
+        model.optimizer.period_range=(100, 2000)
         period = model.best_period
 
     return period
