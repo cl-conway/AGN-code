@@ -53,7 +53,7 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
         file_path_org2 = file_loc + '/LSF_org_' + Object + '.jpg'
 
         #Build original model
-        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=len(Data),oversampling=50)
+        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=10,oversampling=50)
 
         #Create Light Curve
         if Output_figs == 1:
@@ -78,7 +78,7 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
         if power_orig.max() < 0.1:
             periods_orig = 0
         else:
-            model_original.optimizer.period_range=(100, 2000)
+            model_original.optimizer.period_range=(500, 2000)
             periods_orig = model_original.best_period
 
         #Read best period out
@@ -93,7 +93,7 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
     model = LombScargleFast().fit(Times, New_array, Errors)
 
     #Apply the LS mechanism to the data
-    periods, power = model.periodogram_auto(nyquist_factor=len(Data), oversampling=50)
+    periods, power = model.periodogram_auto(nyquist_factor=10, oversampling=50)
     file_path_Light_Curve = file_loc + '/Light_Curve_' + Object + '_' + str(number) + '.jpg'
     file_path_LS_model = file_loc + '/LSF_' + Object + '_' + str(number) + '.jpg'
 
@@ -101,8 +101,9 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
     if Output_figs == 1:
         fig, ax = plt.subplots()
         ax.errorbar(Times, New_array, Errors, fmt='.k', color="r", ecolor='gray', label='Light Curve')
-        ax.set(xlabel='Time (MJD)', ylabel='Magitude',
-            title=Object + ' Light Curve with Red Noise iteration ' + str(number))
+        ax.set(xlabel='Time (MJD)',
+                ylabel='Magitude',
+                title=Object + ' Light Curve with Red Noise iteration ' + str(number))
         ax.invert_yaxis();
         fig.savefig(file_path_Light_Curve, bbox_inches='tight')
 
@@ -119,7 +120,7 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
     if power.max() < 0.1:
         period = 0
     else:
-        model.optimizer.period_range=(100, 2000)
+        model.optimizer.period_range=(500, 2000)
         period = model.best_period
 
     return period
@@ -143,12 +144,12 @@ def calling_function(Data, Iterations, Outputs, Output_loc, Object):
         Period_List.append(int(New_Period))
 
     #Call the LS_hist function in order to create the Histogram
-    LS_hist(Period_List, Output_loc, Object)
+    LS_hist(Period_List, Output_loc, Object, Iterations)
 
     #End of calling_function
 
 #Historgram function plots a histogram of the created data
-def LS_hist(Results, file_loc, Object):
+def LS_hist(Results, file_loc, Object, Iterations):
 
     #Print the number of zero counts within the sample
     print("Zero counts :", Results.count(0))
@@ -159,10 +160,13 @@ def LS_hist(Results, file_loc, Object):
 
     #Plot the Historgram appropriately
     fig, ax = plt.subplots()
-    plt.hist(Results, bins='auto')
-    plt.title(Object + " Histogram with 'auto' bins")
+    ax.hist(Results, bins='auto')
+    ax.set(xlabel = 'MJD value',
+            ylabel = 'No. of Iterations',
+            title = Object + " Histogram with 'auto' bins " + str(Iterations) + ' Iterations')
+
     file_path_hist = file_loc + '\Hist ' + Object + '.jpg'
-    plt.savefig(file_path_hist, bbox_inches='tight')
+    fig.savefig(file_path_hist, bbox_inches='tight')
 
     #End of LS_hist function
 
@@ -180,7 +184,7 @@ def main():
     URLs = Raw_Data_input[['URL']].as_matrix()
 
     #Set the number of iterations here
-    No_of_Iterations = 1000
+    No_of_Iterations = 2
 
     #Whether to output Light curve and L-S figures or not (Y/N)
     Output_figures = 'N'
