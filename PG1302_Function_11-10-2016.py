@@ -9,15 +9,17 @@ appropriately.
 
 Inputs: Raw Data (e.g. for PG1302-102)
 C:/Users/User/Documents/University/Year 4/Project/Raw_Data_Inputs.txt
+or C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Raw_Data_Inputs.txt
 [Internet connection Required to run]
 
 Exports to:
 C:/Users/User/Documents/University/Year 4/Project/Iteration_figures_11-10-2016
+C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Iteration_figures_11-10-2016
 [Exports LSF image and Light Curve image for each iteration as well as the
 results into a text file]
 
 Date Created: 12/10/2016
-Author: Nicholas Kinsey
+Authors: Nicholas Kinsey, Christopher Conway
 ----------------------------------------------------------------------------"""
 
 #Perform the relevant imports
@@ -53,14 +55,14 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
         file_path_org2 = file_loc + '/LSF_org_' + Object + '.jpg'
 
         #Build original model
-        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=10)
+        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=10,oversampling=50)
 
         #Create Light Curve
         if Output_figs == 1:
             fig, ax = plt.subplots()
             ax.errorbar(Times, Mag_orgs, Errors, fmt='.k', color="r", ecolor='gray')
             ax.set(xlabel='Time', ylabel='Magitude',
-                title='PG1302-102 Light Curve Original')
+                title= Object +' Light Curve Original')
             ax.invert_yaxis();
             fig.savefig(file_path_org, bbox_inches='tight')
 
@@ -70,7 +72,7 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
             ax.set(xlim=(0, 2000),
                     xlabel='Period (Days)',
                     ylabel='Lomb-Scargle Power',
-                    title='LS Power against period plot');
+                    title=Object + ' LS Power against period plot');
             fig.savefig(file_path_org2, bbox_inches='tight')
 
 
@@ -94,18 +96,18 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
 
     #Apply the LS mechanism to the data
     periods, power = model.periodogram_auto(nyquist_factor=10, oversampling=50)
-    file_path = file_loc + '/LSF_' + Object + '_' + str(number) + '.jpg'
-    file_path2 = file_loc + '/Light_Curve_' + Object + '_' + str(number) + '.jpg'
-    iteration_title = Object + 'Light Curve with Red Noise iteration ' + str(number)
+    file_path_Light_Curve = file_loc + '/Light_Curve_' + Object + '_' + str(number) + '.jpg'
+    file_path_LS_model = file_loc + '/LSF_' + Object + '_' + str(number) + '.jpg'
 
     #Plotting the Light Curve using seaborn style
     if Output_figs == 1:
         fig, ax = plt.subplots()
         ax.errorbar(Times, New_array, Errors, fmt='.k', color="r", ecolor='gray', label='Light Curve')
-        ax.set(xlabel='Time (MJD)', ylabel='Magitude',
-            title=iteration_title)
+        ax.set(xlabel='Time (MJD)',
+                ylabel='Magitude',
+                title=Object + ' Light Curve with Red Noise iteration ' + str(number))
         ax.invert_yaxis();
-        fig.savefig(file_path2, bbox_inches='tight')
+        fig.savefig(file_path_Light_Curve, bbox_inches='tight')
 
         #Plotting the LS model
         fig, ax = plt.subplots()
@@ -114,7 +116,7 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
                 xlabel='Period (Days)',
                 ylabel='Lomb-Scargle Power',
                 title=Object + ' LS Power against period plot');
-        fig.savefig(file_path, bbox_inches='tight')
+        fig.savefig(file_path_LS_model, bbox_inches='tight')
 
     #Calculating the best period of the model, condition on quality of LSF model
     if power.max() < 0.1:
@@ -122,7 +124,8 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object):
     else:
         model.optimizer.period_range=(500, 2000)
         period = model.best_period
-
+        if (float(period) > 1760 and float(period) < 1770 ):
+            print("spike at ", number)
     return period
 
     #End of Iteration_function
@@ -144,13 +147,13 @@ def calling_function(Data, Iterations, Outputs, Output_loc, Object):
         Period_List.append(int(New_Period))
 
     #Call the LS_hist function in order to create the Histogram
-    LS_hist(Period_List, Output_loc, Object)
+    LS_hist(Period_List, Output_loc, Object, Iterations)
 
     #End of calling_function
 
 #Historgram function plots a histogram of the created data
-def LS_hist(Results, file_loc, Object):
-
+def LS_hist(Results, file_loc, Object, Iterations):
+    """
     #Print the number of zero counts within the sample
     print("Zero counts :", Results.count(0))
 
@@ -158,20 +161,34 @@ def LS_hist(Results, file_loc, Object):
     for j in range(Results.count(0)):
         Results.remove(0)
 
+    spike = []
+    for k in Results:
+        if (k>1760 and k<1770):
+            spike.append(k)
+            print(k)
+    """
     #Plot the Historgram appropriately
     fig, ax = plt.subplots()
-    plt.hist(Results, bins='auto')
-    plt.title(Object + " Histogram with 'auto' bins")
+    ax.hist(Results, bins='auto')
+    ax.set(xlabel = 'MJD value',
+            ylabel = 'No. of Iterations',
+            title = Object + " Histogram with 'auto' bins " + str(Iterations) + ' Iterations')
+
     file_path_hist = file_loc + '\Hist ' + Object + '.jpg'
-    plt.savefig(file_path_hist, bbox_inches='tight')
+    fig.savefig(file_path_hist, bbox_inches='tight')
 
     #End of LS_hist function
 
 #Main function to be called
 def main():
 
+    User = 'C'
+
     #Define the location of the saved path
-    Data_location = 'C:/Users/User/Documents/University/Year 4/Project/Raw_Data_Inputs.txt'
+    if(User == 'C'):
+        Data_location = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Raw_Data_Inputs.txt'
+    if(User == 'N'):
+        Data_location = 'C:/Users/User/Documents/University/Year 4/Project/Raw_Data_Inputs.txt'
 
     #Read in the objects and URLs to be searched
     Raw_Data_input = pd.read_table(Data_location, sep=',', header=0)
@@ -181,14 +198,17 @@ def main():
     URLs = Raw_Data_input[['URL']].as_matrix()
 
     #Set the number of iterations here
-    No_of_Iterations = 1000
+    No_of_Iterations = 2
 
     #Whether to output Light curve and L-S figures or not (Y/N)
     Output_figures = 'N'
 
     #Output_location
-    Output_locations = 'C:/Users/User/Documents/University/Year 4/Project/Iteration_figures_11-10-2016'
-
+    if (User == 'N'):
+        Output_locations = 'C:/Users/User/Documents/University/Year 4/Project/Iteration_figures_11-10-2016'
+    elif (User == 'C'):
+        Output_locations = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Iteration_figures_11-10-2016'
+    """
     #Call the calling function for each object in the data
     for k in range(0, len(Raw_Data_input)):
         Object = Objects.item(k,0)
@@ -198,6 +218,15 @@ def main():
 
         #Calling function runs program
         calling_function(Raw_Data, No_of_Iterations, Output_figures, Output_locations, Object)
+    """
+    k=0
+    Object = Objects.item(k,0)
+    URL = URLs.item(k,0)
+    URL_editted = URL.strip()
+    Raw_Data = pd.read_csv(URL_editted, sep=',', header=0)
+
+    #Calling function runs program
+    calling_function(Raw_Data, No_of_Iterations, Output_figures, Output_locations, Object)
 
     #End of main function
 
