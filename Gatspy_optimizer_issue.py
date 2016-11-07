@@ -20,6 +20,7 @@ import scipy
 import numpy as np
 import matplotlib.pyplot as plt
 from gatspy.periodic import LombScargleFast
+import statistics
 
 #Grab the raw data
 Raw_Data = pd.read_table('Gatspy_issue_Data.txt', sep=',', header=0)
@@ -30,7 +31,7 @@ Mag = Raw_Data[['Mag']].as_matrix().ravel()
 Errors = Raw_Data[['Magerr']].as_matrix().ravel()
 
 #Set the number of iterations here
-iterations = 100
+iterations = 1000
 
 #Define a period list to save all the best periods found by optimizer into
 period_best_list = []
@@ -51,8 +52,8 @@ for i in range(iterations):
     #Set the periods and power, note increasing oversampling reduces the percentage
     #of the max values that are the same, as expected. But does not change the
     #percentage of the best (optimizer) periods that are the same. Hence, we
-    #believe the optimizer is broken.
-    periods, power = model.periodogram_auto(nyquist_factor=0.1, oversampling=500)
+    #believe the optimizer is not working correctly.
+    periods, power = model.periodogram_auto(nyquist_factor=0.1, oversampling=5000)
 
     #Find best period using the optimizer, looking at specific range
     model.optimizer.period_range=(500, 2000)
@@ -93,4 +94,19 @@ ax.set(xlabel = 'Period',
 
 plt.show()
 
+#Calculate the average and std dev for the 'max' method
+period_average = sum(period_max_list)/len(period_max_list)
+period_std_dev = statistics.stdev(period_max_list)
+
+#Print the results
+print('The period of object is:', period_average, 'with error:', period_std_dev)
 #End of file
+
+"""
+So, the optimizer seems to be falling over onto the exact same period value
+each time (roughly 10 sig figs when printed). This results in the large bar
+shown in the histogram at roughly a value of 1763. The alternative method
+with finding a period through looking at the max point of the L-S fit seems
+to give a more accurate result. This method is affected by changes in the
+oversampling value as expected. See below for the raw data needed.
+"""
