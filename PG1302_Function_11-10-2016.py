@@ -39,12 +39,16 @@ import scipy
 import random
 import numpy as np
 import matplotlib.pyplot as plt
+import statistics
 
 from gatspy.periodic import LombScargleFast
 import seaborn; seaborn.set()
 from datetime import datetime
 from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
+
+def Gaus (x,mu,sigma):
+    return 1/(sigma*(2*np.pi)**0.5)*np.exp(((x-mu)/sigma)**2)
 
 #Iteration function
 def Iteration_function(Data, number, Output_figs, file_loc, Object, Iterations):
@@ -64,7 +68,7 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object, Iterations):
         model_original = LombScargleFast().fit(Times, Mag_orgs, Errors)
 
         #Build original model
-        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=0.1,oversampling=50)
+        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=0.1,oversampling=500)
 
         # find maximum of periodigram
         max_periods_orig = periods_orig[np.argmax(power_orig)]
@@ -142,6 +146,7 @@ def calling_function(Data, Iterations, Outputs, Output_loc, Object):
     #Clear the plot before the Histograms are plotted
     plt.clf()
 
+
     #Call the LS_hist function in order to create the Histogram
     LS_hist(Best_Period_List, Output_loc, Object, Iterations, 'Best')
     return (np.max(Times)-np.min(Times))/LS_hist(Period_List, Output_loc, Object, Iterations, 'Max')
@@ -151,15 +156,21 @@ def calling_function(Data, Iterations, Outputs, Output_loc, Object):
 #Historgram function plots a histogram of the created data
 def LS_hist(Results, file_loc, Object, Iterations, string):
     #Plot the Historgram appropriately
-    fig, ax = plt.subplots()
-    n, bins, patches = plt.hist(Results, bins='auto' )
-    ax.hist(Results, bins='auto')
-    ax.set(xlabel = 'Period',
-            ylabel = 'No. of Counts',
-            title = Object + ' ' + string + " Histogram " + str(Iterations) + ' Iterations')
-
+    plt.figure()
+    n, bins = np.histogram(Results, bins='auto' )
+    plt.hist(Results, bins = 'auto', normed = True)
+    period_avg = sum(Results)/len(Results)
+    period_std = statistics.stdev(Results)
+    print('average is ', period_avg)
+    print('standard dev is ', period_std)
+    pdf_x = np.linspace(min(Results),max(Results),1000)
+    pdf_y = (1.0/(period_std*np.sqrt(2*np.pi)))*np.exp(-0.5*((pdf_x-period_avg)/period_std)**2)
+    plt.plot(pdf_x, pdf_y)
+    plt.xlabel('Period')
+    plt.ylabel('No. of Counts')
+    plt.title(Object + ' ' + string + " Histogram " + str(Iterations) + ' Iterations')
     file_path_hist = file_loc + '\Hist ' + Object + ' ' + string + '.jpg'
-    fig.savefig(file_path_hist, bbox_inches='tight')
+    plt.savefig(file_path_hist, bbox_inches='tight')
     plt.clf()
     return(bins[np.argmax(n)])
     #End of LS_hist function
@@ -245,7 +256,7 @@ def Graham_Candidate_Data_Grab(User):
 def main():
 
     #Set the user of the program here
-    User = 'N'
+    User = 'C'
 
     #Define the location of the saved path
     if(User == 'C'):
@@ -254,8 +265,8 @@ def main():
         Data_location = 'C:/Users/User/Documents/University/Year 4/Project/Raw_Data_Inputs.txt'
 
     #Calls the Data Grab function
-    #Graham_Candidate_Data_Grab(User)
-
+    Graham_Candidate_Data_Grab(User)
+"""
     #Read in the objects and URLs to be searched
     Raw_Data_input = pd.read_table(Data_location, sep=',', header=0)
 
@@ -296,7 +307,7 @@ def main():
 
     #Close the period data file
     Period_data.close()
-
+"""
 #End of main function
 main()
 
