@@ -19,6 +19,7 @@ import pandas as pd
 import scipy
 import numpy as np
 import matplotlib.pyplot as plt
+import statistics
 from gatspy.periodic import LombScargleFast
 
 #Grab the raw data
@@ -30,7 +31,7 @@ Mag = Raw_Data[['Mag']].as_matrix().ravel()
 Errors = Raw_Data[['Magerr']].as_matrix().ravel()
 
 #Set the number of iterations here
-iterations = 100
+iterations = 1000
 
 #Define a period list to save all the best periods found by optimizer into
 period_best_list = []
@@ -52,7 +53,7 @@ for i in range(iterations):
     #of the max values that are the same, as expected. But does not change the
     #percentage of the best (optimizer) periods that are the same. Hence, we
     #believe the optimizer is broken.
-    periods, power = model.periodogram_auto(nyquist_factor=0.1, oversampling=500)
+    periods, power = model.periodogram_auto(nyquist_factor=0.1, oversampling=5000)
 
     #Find best period using the optimizer, looking at specific range
     model.optimizer.period_range=(500, 2000)
@@ -75,22 +76,33 @@ Percentage_value_max = int((count_max / iterations)*100)
 print('The percentage of iterations with exact best period twice is:', str(Percentage_value_best), '%')
 print('The percentage of iterations with exact max period twice is:', str(Percentage_value_max), '%')
 
-#Create the plot and show
-fig, ax = plt.subplots()
-n, bins, patches = plt.hist(period_best_list, bins='auto' )
-ax.hist(period_best_list, bins='auto')
-ax.set(xlabel = 'Period',
-        ylabel = 'No. of Counts',
-        title = "Histogram, BEST optimizer " + str(iterations) + ' Iterations')
 
-#Create the plot and show
-fig, ax = plt.subplots()
-n, bins, patches = plt.hist(period_max_list, bins='auto' )
-ax.hist(period_max_list, bins='auto')
-ax.set(xlabel = 'Period',
-        ylabel = 'No. of Counts',
-        title = "Histogram, MAX optimizer " + str(iterations) + ' Iterations')
+plt.figure()
+plt.hist(period_max_list, bins = 'auto', normed = True)
+period_avg = sum(period_max_list)/len(period_max_list)
+period_std = statistics.stdev(period_max_list)
+print('average is ', period_avg)
+print('standard dev is ', period_std)
+pdf_x = np.linspace(min(period_max_list),max(period_max_list),1000)
+pdf_y = (1.0/(period_std*np.sqrt(2*np.pi)))*np.exp(-0.5*((pdf_x-period_avg)/period_std)**2)
+plt.plot(pdf_x, pdf_y, color='r',linewidth = 2.0)
+plt.xlabel('Period (Days)')
+plt.ylabel('Posterior Density Function')
+plt.title("Histogram, MAX optimizer " + str(iterations) + ' Iterations')
 
+plt.figure()
+plt.hist(period_best_list, bins = 'auto', normed = True)
+period_avg = sum(period_best_list)/len(period_best_list)
+period_std = statistics.stdev(period_best_list)
+print('average is ', period_avg)
+print('standard dev is ', period_std)
+pdf_x = np.linspace(min(period_best_list),max(period_best_list),1000)
+pdf_y = (1.0/(period_std*np.sqrt(2*np.pi)))*np.exp(-0.5*((pdf_x-period_avg)/period_std)**2)
+plt.plot(pdf_x, pdf_y, color='r',linewidth = 2.0)
+plt.xlabel('Period (Days)')
+plt.ylabel('Posterior Density Function')
+plt.title("Histogram, BEST optimizer " + str(iterations) + ' Iterations')
 plt.show()
+plt.clf()
 
 #End of file
