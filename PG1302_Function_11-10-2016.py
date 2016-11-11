@@ -64,7 +64,7 @@ def Iteration_function(Data, number, Output_figs, file_loc, Object, Iterations):
         model_original = LombScargleFast().fit(Times, Mag_orgs, Errors)
 
         #Build original model
-        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=0.1,oversampling=50)
+        periods_orig, power_orig = model_original.periodogram_auto(nyquist_factor=0.1,oversampling=500)
 
         # find maximum of periodigram
         max_periods_orig = periods_orig[np.argmax(power_orig)]
