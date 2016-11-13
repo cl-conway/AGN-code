@@ -26,7 +26,6 @@ import numpy as np
 import matplotlib.pyplot as plt
 import math
 
-
 def Full_data_Grab(User, Radius_Value):
 
     #Define the path to the Graham Periodic Candidates
@@ -50,8 +49,11 @@ def Full_data_Grab(User, Radius_Value):
     Upload_Data.Descrip.str.strip()
     Upload_Data.Qpct.str.strip()
 
+    #Remove the spaces in the names column
+    Upload_Data['Name'] = Upload_Data['Name'].str.replace(' ', '')
+
     #Select only the columns to send to CRTS team
-    Upload_Data_mod = Upload_Data[['RA', 'Dec', 'Name']]
+    Upload_Data_mod = Upload_Data[['Name', 'RA', 'Dec']]
 
     #For loop to split the data into chuncks of 100
     for j in range(math.ceil(len(Upload_Data)/100)):
@@ -59,11 +61,11 @@ def Full_data_Grab(User, Radius_Value):
         #Split the data into chuncks of 100
         Final_Quasar_Data = Upload_Data_mod[(j*100):((j+1)*100)-1]
 
+        #Write the Data Upload dataframe to a text document, space delimitted
         if User == 'N':
-            #Write the Data Upload dataframe to a text document, space delimitted
-            Final_Quasar_Data.to_csv(r'C:/Users/User/Documents/University/Year 4/Project/Upload_File.txt', header=None, index=None, sep=';', mode='w')
+            Final_Quasar_Data.to_csv(r'C:/Users/User/Documents/University/Year 4/Project/Upload_File.txt', header=None, index=None, sep=' ', mode='w')
         elif User == 'C':
-            Final_Quasar_Data.to_csv(r'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Upload_File.txt', header=None, index=None, sep=';', mode='w')
+            Final_Quasar_Data.to_csv(r'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Upload_File.txt', header=None, index=None, sep=' ', mode='w')
 
     #End of DataGrab function
 
