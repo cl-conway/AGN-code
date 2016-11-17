@@ -157,21 +157,24 @@ def calling_function(Data, Iterations, Outputs, Output_loc, Object):
 def LS_hist(Results, file_loc, Object, Iterations, string):
     #Plot the Historgram appropriately
     plt.figure()
-    n, bins = np.histogram(Results, bins='auto' )
-    plt.hist(Results, bins = 'auto', normed = True)
-    period_avg = sum(Results)/len(Results)
-    period_std = statistics.stdev(Results)
+    n, bins = np.histogram(Results, bins='auto' ) # np arrays of counts and period bin
+    plt.hist(Results, bins = 'auto', normed = True) # plot Histograms
+    period_avg = sum(Results)/len(Results) # find numerical average of found periods
+    period_std = statistics.stdev(Results) # find numerical standad deviations of found periods
     print('average is ', period_avg)
     print('standard dev is ', period_std)
+    #x values (periods) for best fit gauss
     pdf_x = np.linspace(min(Results),max(Results),1000)
+    #equation of best fit gauss
     pdf_y = (1.0/(period_std*np.sqrt(2*np.pi)))*np.exp(-0.5*((pdf_x-period_avg)/period_std)**2)
-    plt.plot(pdf_x, pdf_y)
+    plt.plot(pdf_x, pdf_y) # plot gauss
     plt.xlabel('Period')
     plt.ylabel('No. of Counts')
     plt.title(Object + ' ' + string + " Histogram " + str(Iterations) + ' Iterations')
     file_path_hist = file_loc + '\Hist ' + Object + ' ' + string + '.jpg'
     plt.savefig(file_path_hist, bbox_inches='tight')
     plt.clf()
+    # reurns the lower bound of the period bin that as the maximum value in hist (most likely period)
     return(bins[np.argmax(n)])
     #End of LS_hist function
 
