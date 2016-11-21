@@ -41,6 +41,7 @@ def Full_data_Grab(User, Radius_Value):
     Test_Data = np.genfromtxt(Quasar_Database_Path, dtype=str, autostrip=True, delimiter=delim, usecols=[0,1,2,3,12])
     Upload_Data = pd.DataFrame(Test_Data)
     Upload_Data.columns = ['RA', 'Dec', 'Name', 'Descrip', 'Qpct']
+    Upload_Data['Radius'] = Radius_Value
 
     #Strip all the strings for the columns in the dataset
     Upload_Data.Name.str.strip()
@@ -52,9 +53,17 @@ def Full_data_Grab(User, Radius_Value):
     #Remove the spaces in the names column
     Upload_Data['Name'] = Upload_Data['Name'].str.replace(' ', '')
 
-    #Select only the columns to send to CRTS team
-    Upload_Data_mod = Upload_Data[['Name', 'RA', 'Dec']]
+    #Replace the empty string in Qpct column with NaN and drop these rows
+    Upload_Data['Qpct'].replace('', np.nan, inplace=True)
+    Upload_Data.dropna(subset=['Qpct'], inplace=True)
 
+    #Only select entries with Qusar percentage greater than 95
+    Upload_Data = Upload_Data[Upload_Data.Qpct >= '95']
+    Upload_Data = Upload_Data.reset_index(drop=True)
+
+    #Select only the columns to send to CRTS team
+    Upload_Data_mod = Upload_Data[['Name', 'RA', 'Dec', 'Radius']]
+    
     #For loop to split the data into chuncks of 100
     for j in range(math.ceil(len(Upload_Data)/100)):
 
@@ -75,7 +84,7 @@ def main():
     User = 'N'
 
     #Define a radius to be used
-    Radius = 0.019
+    Radius = 0.0008333
 
     #Create a string version of the Radius variable, to pass to function
     Radius_str = str(Radius)
