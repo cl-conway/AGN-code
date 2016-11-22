@@ -4,6 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 import emcee
 
+filepath = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/'
+
 x = np.array([201, 244, 47 ,287, 203, 58, 210, 202, 198, 158, 165, 201, 157, 131, 166, 160, 186, 125, 218, 146])
 y = np.array([592, 401, 583, 402, 495, 173, 479, 504, 510, 416, 393, 442, 317, 311, 400, 337, 423, 334, 533, 344])
 yerr = np.array([61, 25, 38, 15, 21, 15, 27, 14, 30, 16, 14, 25, 52, 16, 34, 31, 42, 26, 16, 22])
@@ -23,6 +25,7 @@ cov = np.linalg.inv(np.dot(A.T, np.linalg.solve(C, A))) # covariance matrix of b
 b_ls, m_ls = np.dot(cov, np.dot(A.T, np.linalg.solve(C, y_1)))
 
 xlin = np.linspace(0, np.max(x), 1000) # x values for plotting
+
 
 print("standard m uncertainty ", cov[1,1])
 """
@@ -80,14 +83,14 @@ plt.clf()
 def lnlike(theta, x, y, yerr):
     m, b, P_b, Y_b, lnV_b = theta
     model = m * x + b
-    fg = np.sum(np.log((1-P_b)/(yerr*(2*np.pi)**0.5)))+np.sum( -0.5*(1/yerr**2)*(y-model)**2)
-    bg = np.sum(np.log(P_b/(2*np.pi*(yerr**2+np.exp(lnV_b)))**0.5))+np.sum( -0.5*(1/(yerr+np.exp(lnV_b))**2)*(y-Y_b)**2 )
-    return np.logaddexp(fg, bg)
+    fg = np.log((1-P_b)/(yerr*(2*np.pi)**0.5)) -0.5*((y-model)/yerr)**2
+    bg = np.log(P_b/((2*np.pi*(yerr**2+np.exp(lnV_b)))**0.5)) -0.5*(1/(yerr**2+np.exp(lnV_b)))*(y-Y_b)**2
+    return np.sum(np.logaddexp(fg, bg))
 
 #function for log of priors
 def lnprior(theta):
     m, b, P_b, Y_b, lnV_b = theta
-    if (0.0 < m <5.0 and -100 < b  <500 and 0 < P_b < 1 and 0 <Y_b< 600 and 0 < lnV_b < 10):
+    if (0.0 < m <5.0 and -100 < b  <500 and 0.0 < P_b < 1.0 and 0<Y_b< 600 and 0 < lnV_b < 10):
         return 0.00
     return -np.inf
 
@@ -98,35 +101,45 @@ def lnprob(theta, x, y, yerr):
         return -np.inf
     return lp + lnlike(theta, x, y, yerr)
 
+MCinit = np.array([m_ls, b_ls, 0.1, 400, 5]) # initial estimate for MCMC
+
 import scipy.optimize as op
-nll = lambda *args: -lnlike(*args)
-result = op.minimize(nll, [m_ls, b_ls, 0.1, 400, 5], args=(x, y, yerr))
+nll = lambda *args: -lnprob(*args)
+result = op.minimize(nll, MCinit, args=(x, y, yerr))
 m_ml, b_ml, Pb_ml, Yb_ml, lnVb_ml = result["x"]
 
-MCinit = np.array([m_ls, b_ls, 0.1, 400, 5]) # initial estimate for MCMC
+#print(m_ml, b_ml, Pb_ml, Yb_ml, lnVb_ml)
+
 ndim, nwalkers = 5, 300
 pos = [result["x"] + 1e-4*np.random.randn(ndim) for i in range(nwalkers)]
 
 sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(x, y, yerr))
 sampler.run_mcmc(pos, 500)
-samples = sampler.chain[:, 100:, :].reshape((-1, ndim)) # remove first 100 (burn in)
-
+"""
+samplesa = sampler.chain
+for j in range(ndim):
+    plt.figure(j)
+    for i in range(nwalkers):
+        plt.plot(range(500), samplesa[i, : , j])
+    plt.show()
+"""
+samples = sampler.chain[:, 100:, :].reshape((-1, ndim)) # remove first 100 (burn in) #ask will to explain this line
 plt.figure(1)
 plt.subplot(221)
-plt.hist2d(samples[:,1],samples[:,0] , bins=100)
+plt.hist2d(samples[:,1],samples[:,0] , bins=50)
 plt.colorbar()
 plt.xlabel("b")
 plt.ylabel("m")
 
 plt.subplot(222)
 for m, b, P_b, Y_b, lnV_b in samples[np.random.randint(len(samples), size=10)]:
-    plt.plot(xlin, m*xlin+b, color="k", alpha=0.1)
+    plt.plot(xlin, m*xlin +b, color="k", alpha=0.1)
 plt.errorbar(x, y, yerr=yerr, fmt=".k")
 plt.xlabel("x")
 plt.ylabel("y")
 
 plt.subplot(223)
-plt.hist(samples[:,2], normed = True)
+plt.hist(samples[:,2])
 plt.xlabel("Pb")
 
 yerr_2 = yerr/2
@@ -135,10 +148,12 @@ sampler.run_mcmc(pos, 500)
 samples = sampler.chain[:, 100:, :].reshape((-1, ndim))
 
 plt.subplot(224)
-plt.hist(samples[:,2], normed = True)
+plt.hist(samples[:,2])
 plt.xlabel("Pb")
 
-plt.show()
+plt.savefig(filepath + 'HBL_ex6', bbox_inches='tight')
+plt.clf()
+
 """
 #Ex9
 sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(x_1, y_1, yerr_1))
