@@ -5,19 +5,19 @@ magnitudes among the errors for each individual point. A Lomb-Scargle-Fast
 model is created for each iteration. Relevant graphs saved to a specific
 location and the best period for each LSF model is saved and printed.
 All variables to be changed in 'main' function. Rest of code will run
-appropriately. The function 'Granham_Candidate_Grab_Function' will grab, from
+appropriately. The function 'Eracelous_Candidate_Data_Grab' will grab, from
 the Eracelous_Candidates_names text file, the periodic candidates names and the
 Right Ascension and Declination values for these objects. The funtion will then
 input these into the CRTS database, locate the relevant URL for the data and
-save this URL to a the Raw_Data_Inputs text file. The authors advise running
+save this URL to a the Eracelous_Raw_Data_Inputs text file. The authors advise running
 this function independantly from the rest of the program in order to reduce
 computational running time.
 
-Inputs: Raw Data (e.g. for PG1302-102)
-C:/Users/User/Documents/University/Year 4/Project/Raw_Data_Inputs.txt
+Inputs: Raw Data
+C:/Users/User/Documents/University/Year 4/Project/Eracelous_Raw_Data_Inputs.txt
 C:/Users/User/Documents/University/Year 4/Project/Eracelous_Candidates_names.txt
 or
-C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Raw_Data_Inputs.txt
+C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Eracelous_Raw_Data_Inputs.txt
 C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Eracelous_Candidates_names.txt
 [Internet connection Required to run]
 
@@ -27,7 +27,7 @@ C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Iteration_figures_11-
 [Exports LSF image and Light Curve image for each iteration as well as the
 results into a text file]
 
-Date Created: 12/10/2016
+Date Created: 21/11/2016
 Authors: Nicholas Kinsey, Christopher Conway
 ----------------------------------------------------------------------------"""
 
@@ -48,7 +48,7 @@ from selenium import webdriver
 from selenium.webdriver.common.keys import Keys
 from selenium.common.exceptions import NoSuchElementException
 
-def Gaus (x,mu,sigma):
+def Gaus(x,mu,sigma):
     return 1/(sigma*(2*np.pi)**0.5)*np.exp(((x-mu)/sigma)**2)
 
 #Iteration function
@@ -158,12 +158,6 @@ def LS_hist(Results, file_loc, Object, Iterations, string):
     plt.figure()
     n, bins = np.histogram(Results, bins='auto' )
     plt.hist(Results, bins = 'auto', normed = True)
-    #period_avg = sum(Results)/len(Results)
-    #period_std = statistics.stdev(Results)
-
-    #pdf_x = np.linspace(min(Results),max(Results),1000)
-    #pdf_y = (1.0/(period_std*np.sqrt(2*np.pi)))*np.exp(-0.5*((pdf_x-period_avg)/period_std)**2)
-    #plt.plot(pdf_x, pdf_y)
 
     plt.xlabel('Period')
     plt.ylabel('No. of Counts')
