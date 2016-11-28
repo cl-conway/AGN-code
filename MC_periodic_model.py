@@ -37,8 +37,8 @@ import emcee
 #function for log of likelihood
 def lnlike(theta, t, t_0, mag, mag_err):
     A, phi, p, mu, nu = theta
-    model = A*np.sin((1/p)*2*np.pi()*(t-t0) + phi)
-    fg = -np.log(nu*mag_err*(2*np.pi)**0.5) -0.5*((y-model)/(nu*mag_err))**2
+    model = A*np.sin((1/p)*2*np.pi()*(t-t0) + phi) + mu
+    fg = -np.log(nu*mag_err*(2*np.pi)**0.5) -0.5*((mag-model)/(nu*mag_err))**2
     return(np.sum(fg))
 
 #function for log of priors
@@ -52,7 +52,7 @@ def lnprob(theta,pmax,pmin,mumax,mumin, t, t_0, mag, mag_err):
     lp = lnprior(theta,pmax,pmin,mumax,mumin)
     if not np.isfinite(lp):
         return -np.inf
-    return lp + lnlike(theta, t, mag, mag_err)
+    return lp + lnlike(theta, t, t_0, mag, mag_err)
 
 #Iteration function
 def MCMC(Data, Output_Lightcurve, file_loc, Object):
@@ -87,7 +87,7 @@ def MCMC(Data, Output_Lightcurve, file_loc, Object):
     # t0 is an offset time
     t0 = Times[0]
 
-    MCinit = [mumax-mumin, 0, 2, (mumax+mumin)/2, 1] # Estimate of maximum for initialiser for optimiser
+    MCinit = [(mumax-mumin)/2, 0, pmax/2, (mumax+mumin)/2, 1] # Estimate of maximum for initialiser for optimiser
 
     import scipy.optimize as op
     nll = lambda *args: -lnprob(*args)
@@ -100,6 +100,7 @@ def MCMC(Data, Output_Lightcurve, file_loc, Object):
     sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(pmax,pmin,mumax,mumin,Times,t0, Mag, Mag_Err))
     sampler.run_mcmc(pos, 500)
 
+    #for loop to show plot of walker steps for each dimension
     samplesa = sampler.chain
     for j in range(ndim):
         plt.figure(j)
