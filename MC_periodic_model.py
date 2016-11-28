@@ -37,14 +37,15 @@ import emcee
 #function for log of likelihood
 def lnlike(theta, t, t_0, mag, mag_err):
     A, phi, p, mu, nu = theta
-    model = A*np.sin((1/p)*2*np.pi()*(t-t0) + phi) + mu
-    fg = -np.log(nu*mag_err*(2*np.pi)**0.5) -0.5*((mag-model)/(nu*mag_err))**2
+    model = A*np.sin((1/p)*2*np.pi*(t-t_0) + phi) + mu
+    fg = -np.log(nu*mag_err*(2*np.pi**0.5)) -0.5*((mag-model)/(nu*mag_err))**2
     return(np.sum(fg))
 
 #function for log of priors
 def lnprior(theta,pmax,pmin,mumax,mumin):
     A, phi, p, mu, nu = theta
     if 0 < A < 10*(mumax-mumin) and 0 < phi <2*np.pi and pmin < p < pmax and mumin < mu < mumax and 0.1 < nu <10:
+
         return 0.00
     return -np.inf
 # function for log of posterior
@@ -73,7 +74,7 @@ def MCMC(Data, Output_Lightcurve, file_loc, Object):
 
     file_path_period = file_loc + '\Period_pdf_' + Object + '.jpg'
 
-    pmax = Times[0] - Times[np.size(Times)-1] # Maximum period is total obervation time
+    pmax = Times[np.size(Times)-1] - Times[0] # Maximum period is total obervation time
     pmin = Times[1]-Times[0] #Minimum period is the shortest time interval between two data points
     for i in range(1, np.size(Times)-2):
         difference = Times[i+1]-Times[i]
@@ -98,17 +99,19 @@ def MCMC(Data, Output_Lightcurve, file_loc, Object):
     pos = [result["x"] + 1e-4*np.random.randn(ndim) for i in range(nwalkers)] # Initial position of walkers
 
     sampler = emcee.EnsembleSampler(nwalkers, ndim, lnprob, args=(pmax,pmin,mumax,mumin,Times,t0, Mag, Mag_Err))
-    sampler.run_mcmc(pos, 500)
-
+    sampler.run_mcmc(pos, 800)
+    """
     #for loop to show plot of walker steps for each dimension
     samplesa = sampler.chain
+    dim_names = ['A','phi','p','mu','nu']
     for j in range(ndim):
         plt.figure(j)
         for i in range(nwalkers):
-            plt.plot(range(500), samplesa[i, : , j])
+            plt.plot(range(800), samplesa[i, : , j])
+            plt.title(dim_names[j])
         plt.show()
-
-    samples = sampler.chain[:, 100:, :].reshape((-1, ndim)) # remove first 100 (burn in) #ask will to explain this line
+    """
+    samples = sampler.chain[:, 250:, :].reshape((-1, ndim)) # remove first 100 (burn in) #ask will to explain this line
 
     plt.figure()
     plt.hist(samples[:,2], normed=True) # plot marginalised over all but period
@@ -133,8 +136,7 @@ def main():
     elif (User == 'C'):
         Output_locations = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/MC_periodic_model'
 
-    Output_Lightcurve = True
-    Output_period_hist = True
+    Output_Lightcurve = False
     #Read in the objects and URLs to be searched
     Raw_Data_input = pd.read_table(Data_location, sep=',', header=0)
 
