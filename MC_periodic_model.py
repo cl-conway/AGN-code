@@ -91,14 +91,6 @@ def MCMC(Data, Output_Lightcurve, Output_Variable_Figure, file_loc, Object):
     file_path_variables = file_loc + '\Variable_plots_' + Object + '.jpg'
     file_path_Light_Curve = file_loc + '\Light_Curve_' + Object + '.jpg'
 
-    #Create Light Curve
-    if Output_Lightcurve == True:
-        plt.figure()
-        plt.errorbar(Times, Mag, Mag_Err, fmt='.k')
-        #Saving the figure
-        plt.savefig(file_path_Light_Curve, bbox_inches='tight')
-        plt.clf()
-
     #Define the max and min periods as whole observation time and smallest time difference between two observations
     pmax = Times[np.size(Times)-1] - Times[0]
     pmin = np.min(np.diff(np.sort(Times)))
@@ -158,14 +150,58 @@ def MCMC(Data, Output_Lightcurve, Output_Variable_Figure, file_loc, Object):
     #Create a normalised histogram plot, marginalised over all parameters except for the period
     plt.figure()
     plt.hist(samples[:,2], normed=True)
-    plt.xlabel("Period")
+    plt.xlabel("Period(days)")
     plt.savefig(file_path_period, bbox_inches='tight')
+
+    #Set values for each parameter reagrding the value and counts in each bin
+    n_A, bins_A = np.histogram(samples[:,0], normed=True)
+    n_phi, bins_phi = np.histogram(samples[:,1], normed=True)
+    n_p, bins_p = np.histogram(samples[:,2], normed=True)
+    n_mu, bins_mu = np.histogram(samples[:,3], normed=True)
+    n_nu, bins_nu = np.histogram(samples[:,4], normed=True)
+
+    #Set the maximum marginalized parameters to be ussed in the model
+    A_model = bins_A[np.argmax(n_A)]
+    phi_model = bins_phi[np.argmax(n_phi)]
+    p_model = bins_p[np.argmax(n_p)]
+    mu_model = bins_mu[np.argmax(n_mu)]
+    nu_model = bins_nu[np.argmax(n_nu)]
+
+    #Create Light Curve
+    if Output_Lightcurve == True:
+        plt.figure()
+
+        #Plot the error bars, using the original and scaled errors
+        plt.errorbar(Times, Mag, Mag_Err, fmt='.k', ecolor='black')
+        plt.errorbar(Times,Mag, nu_ml*Mag_Err, fmt='.k', ecolor='b')
+        plt.errorbar(Times,Mag, nu_model*Mag_Err, fmt='.k', ecolor='g')
+
+        #Create a linearly spaced array of x-values for the model
+        x_lin = np.linspace(np.min(Times), np.max(Times), 1000)
+
+        #Create the models for the optimized and MCMC likelihood values
+        model_optimized = A_ml*np.sin((1/p_ml)*2*np.pi*(x_lin-t0) + phi_ml) + mu_ml
+        model_mcmc_likelihood = A_model*np.sin((1/p_model)*2*np.pi*(x_lin-t0) + phi_model) + mu_model
+
+        #Create the plots
+        plt.plot(x_lin, model_optimized, linewidth=2.0, color = 'b', label='Optimized params')
+        plt.plot(x_lin, model_mcmc_likelihood, linewidth=2.0, color = 'g', label = 'Ind MCMC maximum likelihood params')
+
+        #Insert legend and labels
+        plt.legend(loc = 'lower right')
+        plt.xlabel('Times')
+        plt.ylabel('Magnitude')
+        plt.title(Object + ' Light curve')
+
+        #Save the figure
+        plt.savefig(file_path_Light_Curve, bbox_inches='tight')
+        plt.clf()
 
     #Close all open plots for that Object
     plt.close('all')
 
     #Return the error scaling parameters, to save to a text file
-    return np.max(samples[:,4])
+    return bins_nu[np.argmax(n_nu)]
 
     #End of MCMC function
 
@@ -187,7 +223,7 @@ def main():
         Output_locations = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/MC_periodic_model'
 
     #Set whether to output lightcurve or the figure for the different parameters
-    Output_Lightcurve = False
+    Output_Lightcurve = True
     Output_Variable_Figure = True
 
     #Read in the objects and URLs to be searched
