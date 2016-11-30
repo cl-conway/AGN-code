@@ -98,12 +98,15 @@ def MCMC(Data, Output_Lightcurve, Output_Variable_Figure, file_loc, Object):
     #Mu is standard offset of the sinusoid and can be between the highest and lowest magnitude values
     mumax = np.max(Mag)
     mumin = np.min(Mag)
+    muave = np.average(Mag)
+    Amp_value = ((mumax - muave) + (muave - mumin)) / 2
 
     #Define an offset time, the earliest observation time for the data
     t0 = Times[0]
 
     #Estimate of maximum for initialiser for optimiser
-    MCinit = [(mumax-mumin)/2, 0, pmax/2, (mumax+mumin)/2, 1]
+    MCinit = [Amp_value, 0, pmax/2, muave, 1]
+    #MCinit = [(mumax-mumin)/2, 0, pmax/2, (mumax+mumin)/2, 1]
 
     #Optimization over the various parameters
     nll = lambda *args: -lnprob(*args)
@@ -185,7 +188,7 @@ def MCMC(Data, Output_Lightcurve, Output_Variable_Figure, file_loc, Object):
 
         #Create the plots
         plt.plot(x_lin, model_optimized, linewidth=2.0, color = 'b', label='Optimized params')
-        plt.plot(x_lin, model_mcmc_likelihood, linewidth=2.0, color = 'g', label = 'Ind MCMC maximum likelihood params')
+        plt.plot(x_lin, model_mcmc_likelihood, linewidth=2.0, color = 'g', label = 'Ind MCMC max likelihood')
 
         #Insert legend and labels
         plt.legend(loc = 'lower right')
@@ -201,7 +204,7 @@ def MCMC(Data, Output_Lightcurve, Output_Variable_Figure, file_loc, Object):
     plt.close('all')
 
     #Return the error scaling parameters, to save to a text file
-    return bins_nu[np.argmax(n_nu)]
+    return bins_nu[np.argmax(n_nu)], bins_p[np.argmax(n_p)]
 
     #End of MCMC function
 
@@ -234,8 +237,8 @@ def main():
     URLs = Raw_Data_input[['URL']].as_matrix()
 
     #Open up text file to write number of periods for each object
-    Error_Scaling_data = open('Nu_values.txt','w')
-    Error_Scaling_data.write("Object    nu\n")
+    MCMC_output_data = open('MCMC_output_values.txt','w')
+    MCMC_output_data.write("Object;Error_Scaling;Period\n")
 
     #Call the MCMC function for each object in the data
     for k in range(0, 10):
@@ -245,13 +248,13 @@ def main():
         Raw_Data = pd.read_csv(URL_editted, sep=',', header=0)
 
         #MCMC function runs program
-        error_scaling = MCMC(Raw_Data, Output_Lightcurve, Output_Variable_Figure, Output_locations, Object)
+        error_scaling, MCMC_period = MCMC(Raw_Data, Output_Lightcurve, Output_Variable_Figure, Output_locations, Object)
 
         #Write the outputs from the MCMC function to a text file
-        Error_Scaling_data.write( Object + ', ' + str(error_scaling) + '\n')
+        MCMC_output_data.write(Object + ';' + str(error_scaling) + ';' + str(MCMC_period) + '\n')
 
     #Close the error scaling data file
-    Error_Scaling_data.close()
+    MCMC_output_data.close()
 
 #End of main function
 
