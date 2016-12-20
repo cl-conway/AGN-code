@@ -30,9 +30,9 @@ def Full_data_Grab(User, Radius_Value):
 
     #Define the path to the Graham Periodic Candidates
     if User == 'N':
-        Quasar_Database_Path = 'C:/Users/User/Documents/University/Year 4/Project/Million_Quasar_Database_Test.txt'
+        Quasar_Database_Path = 'C:/Users/User/Documents/University/Year 4/Project/Million_Quasar_Database.txt'
     elif User == 'C':
-        Quasar_Database_Path = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Million_Quasar_Database_Test.txt'
+        Quasar_Database_Path = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Million_Quasar_Database.txt'
 
     #Specify the size of the columns from million quasars database
     delim = (11,12,27,5,5,5,4,2,2,7,7,7,4,23,23,23,23)
@@ -41,7 +41,7 @@ def Full_data_Grab(User, Radius_Value):
     Test_Data = np.genfromtxt(Quasar_Database_Path, dtype=str, autostrip=True, delimiter=delim, usecols=[0,1,2,3,12])
     Upload_Data = pd.DataFrame(Test_Data)
     Upload_Data.columns = ['RA', 'Dec', 'Name', 'Descrip', 'Qpct']
-    Upload_Data['Radius'] = Radius_Value
+    #Upload_Data['Radius'] = Radius_Value
 
     #Strip all the strings for the columns in the dataset
     Upload_Data.Name.str.strip()
@@ -62,19 +62,21 @@ def Full_data_Grab(User, Radius_Value):
     Upload_Data = Upload_Data.reset_index(drop=True)
 
     #Select only the columns to send to CRTS team
-    Upload_Data_mod = Upload_Data[['Name', 'RA', 'Dec', 'Radius']]
-    
+    Upload_Data_mod = Upload_Data[['Name', 'RA', 'Dec']]
+
     #For loop to split the data into chuncks of 100
-    for j in range(math.ceil(len(Upload_Data)/100)):
+    #for j in range(math.ceil(len(Upload_Data)/100)):
 
         #Split the data into chuncks of 100
-        Final_Quasar_Data = Upload_Data_mod[(j*100):((j+1)*100)-1]
+        #Final_Quasar_Data = Upload_Data_mod[(j*100):((j+1)*100)-1]
 
-        #Write the Data Upload dataframe to a text document, space delimitted
-        if User == 'N':
-            Final_Quasar_Data.to_csv(r'C:/Users/User/Documents/University/Year 4/Project/Upload_File.txt', header=None, index=None, sep=' ', mode='w')
-        elif User == 'C':
-            Final_Quasar_Data.to_csv(r'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Upload_File.txt', header=None, index=None, sep=' ', mode='w')
+    Final_Quasar_Data = Upload_Data_mod
+
+    #Write the Data Upload dataframe to a text document, space delimitted
+    if User == 'N':
+        Final_Quasar_Data.to_csv(r'C:/Users/User/Documents/University/Year 4/Project/Upload_File_Final.txt', header=None, index=None, sep=' ', mode='w')
+    elif User == 'C':
+        Final_Quasar_Data.to_csv(r'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Upload_File_Final.txt', header=None, index=None, sep=' ', mode='w')
 
     #End of DataGrab function
 

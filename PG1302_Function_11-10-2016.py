@@ -232,10 +232,12 @@ def Graham_Candidate_Data_Grab(User):
         #Selects the RA and DEC input boxes appropriately
         RA_text_box = driver.find_element_by_name('RA')
         Dec_text_box = driver.find_element_by_name('Dec')
+        Radius_text_box = driver.find_element_by_name('Rad')
 
         #Inserts the relevant text into each input box
         RA_text_box.send_keys(RA_Values[j,0])
         Dec_text_box.send_keys(Dec_Values[j,0])
+        Radius_text_box.send_keys('0.05')
 
         #Click the submit button
         driver.find_element_by_name('.submit').click()
@@ -259,7 +261,7 @@ def Graham_Candidate_Data_Grab(User):
 def main():
 
     #Set the user of the program here
-    User = 'C'
+    User = 'N'
 
     #Define the location of the saved path
     if(User == 'C'):
