@@ -29,7 +29,7 @@ def main():
 
     #Choose whether to anlyse Graham or Random objects
     Analyse_Random = 'Y'
-    Analyse_Graham = 'N'
+    Analyse_Graham = 'Y'
 
     #Set the number of objects to examine
     No_Random_Obj = 1
@@ -59,11 +59,11 @@ def main():
 
             #Open command window and perform nested sampling. Re-open command and run julia analysis script
             if User == 'N':
-                #subprocess.Popen(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data')
+                #subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data')
                 subprocess.call(r'julia Randoms_Data/Run_NS_Randoms_analysis.jl ' + Object_Name_pass, cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory')
             elif User =='C':
                 subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data')
-                #subprocess.Popen(r'julia julia_script_path', cwd=...)
+                #subprocess.call(r'julia julia_script_path', cwd=...)
 
             #Print an output for each object completion
             print('Iteration complete for Random Object', i+1)
@@ -80,15 +80,15 @@ def main():
 
             #Open command window and perform nested sampling. Re-open command and run julia analysis script
             if User == 'N':
-                #subprocess.Popen(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data')
+                subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data')
                 subprocess.call(r'julia Grahams_Data/Run_NS_Grahams_analysis.jl ' + Object_Name_pass, cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory')
             elif User == 'C':
                 subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data')
-                #subprocess.Popen(r'julia julia_script_path', cwd=...)
+                #subprocess.call(r'julia julia_script_path', cwd=...)
 
             #Print an output for each object completion
             print('Iteration complete for Graham Object', i+1)
 
     print("***Tasks Complete***")
-    
+
 main()
