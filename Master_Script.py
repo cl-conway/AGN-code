@@ -29,11 +29,13 @@ def main():
 
     #Choose whether to anlyse Graham or Random objects
     Analyse_Random = 'Y'
-    Analyse_Graham = 'Y'
+    Analyse_Graham = 'N'
 
-    #Set the number of objects to examine
-    No_Random_Obj = 1
-    No_Graham_Obj = 1
+    #Set which objects to examine
+    R_iter_start = 0
+    R_iter_end = 5
+    G_iter_start = 0
+    G_iter_end = 5
 
     #Set the file paths
     if User == 'N':
@@ -48,7 +50,7 @@ def main():
     Graham_Obj_Names = pd.read_table(Graham_Obj_Name_Path, sep=' ', header=None)
 
     if Analyse_Random == 'Y':
-        for i in range(No_Random_Obj):
+        for i in range(R_iter_start, R_iter_end):
 
             #Read object name, locate relevant data
             Object_Name = Random_Obj_Names.loc[i,0]
@@ -59,7 +61,7 @@ def main():
 
             #Open command window and perform nested sampling. Re-open command and run julia analysis script
             if User == 'N':
-                #subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data')
+                subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data')
                 subprocess.call(r'julia Randoms_Data/Run_NS_Randoms_analysis.jl ' + Object_Name_pass, cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory')
             elif User =='C':
                 subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data')
@@ -69,7 +71,7 @@ def main():
             print('Iteration complete for Random Object', i+1)
 
     if Analyse_Graham == 'Y':
-        for i in range(No_Graham_Obj):
+        for i in range(G_iter_start, G_iter_end):
 
             #Read object name, locate relevant data
             Object_Name = Graham_Obj_Names.loc[i,0]

@@ -41,9 +41,9 @@ fs = Kalman.psdfreq(post)
 fig, ax =subplots()
 
 #Set the number of iterations for the plotting procedure
-iterations = 11
+iterations = 10
 
-for i in 1:11
+for i in 1:(iterations+1)
 
     p = postsamples[:,rand(1:size(postsamples,2))]
     psd = Kalman.psd(post, p, fs)

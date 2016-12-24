@@ -29,13 +29,8 @@ Object_Name = replace(Object, "_", " ")
 #Open the data file, created by the nested sampling prcedure
 post, state = open(deserialize, "state-3-2.dat")
 
-postsamples = EnsembleNest.postsample(state)
-
+postsamples, lnprobs = EnsembleNest.postsample(state)
 freqs = Kalman.frequencies(post, postsamples)
-
-selector = freqs[2,:] .> 0
-
-fpos = vec(freqs[2,selector])
 
 fs = Kalman.psdfreq(post)
 
@@ -45,7 +40,7 @@ fig, ax =subplots()
 #Set the number of iterations for the plotting procedure
 iterations = 10
 
-for i in 1:iterations
+for i in 1:(iterations+1)
 
     p = postsamples[:,rand(1:size(postsamples,2))]
     psd = Kalman.psd(post, p, fs)
