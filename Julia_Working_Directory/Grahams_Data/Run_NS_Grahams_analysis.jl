@@ -26,8 +26,11 @@ usage = "julia Run_NS_Grahams_analysis.jl Object_Name"
 Object = ARGS[1]
 Object_Name = replace(Object, "_", " ")
 
+#Define the location to the output of the nested sampling procedure
+Data_Location = "C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data/state-3-2.dat"
+
 #Open the data file, created by the nested sampling prcedure
-post, state = open(deserialize, "state-3-2.dat")
+post, state = open(deserialize, Data_Location)
 
 postsamples, lnprobs = EnsembleNest.postsample(state)
 freqs = Kalman.frequencies(post, postsamples)
@@ -57,7 +60,7 @@ ylabel("PSD")
 title("A PSD plot $iterations iterations")
 
 #Create a figure path, which includes the objects name and save the figure
-Figure_path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Graham_Output_Images/'
-Figure_name = 'PSD_Plot_' + Object_Name + '.jpg'
-Total_Figure_path = Figure_path + Figure_name
+Figure_path = "C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Graham_Output_Images/"
+Figure_name = "PSD_Plot_" * Object_Name * ".jpg"
+Total_Figure_path = Figure_path * Figure_name
 savefig(Total_Figure_path)

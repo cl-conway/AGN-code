@@ -28,14 +28,14 @@ def main():
     User = 'N'
 
     #Choose whether to anlyse Graham or Random objects
-    Analyse_Random = 'N'
+    Analyse_Random = 'Y'
     Analyse_Graham = 'Y'
 
     #Set which objects to examine
-    R_iter_start = 0
-    R_iter_end = 5
-    G_iter_start = 0
-    G_iter_end = 5
+    R_iter_start = 5
+    R_iter_end = 15
+    G_iter_start = 5
+    G_iter_end = 15
 
     #Set the file paths
     if User == 'N':
