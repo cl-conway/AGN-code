@@ -14,6 +14,7 @@ This will then create a Data file:
 C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data/state-3-2.dat.txt
 C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data/state-3-2.dat.txt
 
+
 Date Created: 20/12/2016
 Authors: Nicholas Kinsey, Christopher Conway
 ----------------------------------------------------------------------------"""
@@ -25,25 +26,25 @@ import pandas as pd
 def main():
 
     #Set the User
-    User = 'N'
+    User = 'C'
 
     #Choose whether to anlyse Graham or Random objects
-    Analyse_Random = 'Y'
+    Analyse_Random = 'N'
     Analyse_Graham = 'Y'
 
     #Set which objects to examine
     R_iter_start = 5
     R_iter_end = 15
-    G_iter_start = 5
-    G_iter_end = 15
+    G_iter_start = 96
+    G_iter_end = 106
 
     #Set the file paths
     if User == 'N':
         Random_Obj_Name_Path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_ID_Values.txt'
         Graham_Obj_Name_Path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Graham_ID_Values.txt'
     elif User =='C':
-        Random_Obj_Name_Path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_ID_Values.txt'
-        Graham_Obj_Name_Path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Graham_ID_Values.txt'
+        Random_Obj_Name_Path = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Randoms_ID_Values.txt'
+        Graham_Obj_Name_Path = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Graham_ID_Values.txt'
 
     #Read in the object names
     Random_Obj_Names = pd.read_table(Random_Obj_Name_Path, sep=' ', header=None)
@@ -62,10 +63,10 @@ def main():
             #Open command window and perform nested sampling. Re-open command and run julia analysis script
             if User == 'N':
                 subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data')
-                subprocess.call(r'julia Randoms_Data/Run_NS_Randoms_analysis.jl ' + Object_Name_pass, cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory')
+                subprocess.call(r'julia Randoms_Data/Run_NS_Randoms_analysis.jl ' + Object_Name_pass, cwd=r'C:/Users/User/Documents/University/Year 4/Project/AGN-code/Julia_Working_Directory/Graham_ID_Values.txt')
             elif User =='C':
-                subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data')
-                #subprocess.call(r'julia julia_script_path', cwd=...)
+                subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/Christopher/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data')
+                subprocess.call(r'julia Randoms_Data/Run_NS_Randoms_analysis.jl ' + Object_Name_pass, cwd=r'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Graham_ID_Values.txt')
 
             #Print an output for each object completion
             print('Iteration completed for Random Object', i+1)
@@ -85,8 +86,8 @@ def main():
                 subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl "' + Data_text + '" 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data')
                 subprocess.call(r'julia Grahams_Data/Run_NS_Grahams_analysis.jl ' + Object_Name_pass, cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory')
             elif User == 'C':
-                subprocess.call(r'julia C:/Users/User/.julia/v0.5/CARMA/bin/run_carma.jl ' + Data_text + ' 3 2' , cwd=r'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data')
-                #subprocess.call(r'julia julia_script_path', cwd=...)
+                subprocess.call(r'julia C:/Users/Christopher/.julia/v0.5/CARMA/bin/run_carma.jl "' + Data_text + '" 3 2' , cwd=r'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Grahams_Data')
+                subprocess.call(r'julia Grahams_Data/Run_NS_Grahams_analysis.jl ' + Object_Name_pass, cwd=r'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory')
 
             #Print an output for each object completion
             print('Iteration completed for Graham Object', i+1)
