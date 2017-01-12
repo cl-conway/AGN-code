@@ -56,6 +56,7 @@ def Random_Obj_Make_Light_Curve(User):
         Mag_orgs = Data_for_obj[['Mag']].as_matrix().ravel()
 
         #Make the plot and format
+        plt.figure()
         plt.errorbar(Times, Mag_orgs, Errors, fmt='.k')
         plt.xlabel('Time(MJD)')
         plt.ylabel('Magitude')
@@ -101,6 +102,7 @@ def Graham_Obj_Make_Light_Curve(User):
         Mag_orgs = Data_for_obj[['Mag']].as_matrix().ravel()
 
         #Make the plot and format
+        plt.figure()
         plt.errorbar(Times, Mag_orgs, Errors, fmt='.k')
         plt.xlabel('Time(MJD)')
         plt.ylabel('Magitude')
