@@ -67,7 +67,7 @@ def Random_Obj_Make_Light_Curve(User):
         if User == 'N':
             file_path_Light_Curve = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Random_Object_Light_Curves/' + Interesting_Obj_Names.iloc[i,0] +'.jpg'
         elif User == 'C':
-            file_path_Light_Curve = 
+            file_path_Light_Curve =
 
         #Save the plot
         plt.savefig(file_path_Light_Curve, bbox_inches='tight')
@@ -79,7 +79,7 @@ def Graham_Obj_Make_Light_Curve(User):
     if User == 'N':
         Interesting_Objects_path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Interesting_Grahams.txt'
     elif User == 'C':
-        Interesting_Object_path =
+        Interesting_Object_path = 'C:/Users/Christopher/Documents/UNI/Year 4/AGN-code/Project/Julia_Working_Directory/Interesting_Grahams.txt'
 
     #Read the interesting object names in as pandas dataframe
     Interesting_Obj_Names = pd.read_table(Interesting_Objects_path, sep=' ', header=None)
@@ -89,7 +89,7 @@ def Graham_Obj_Make_Light_Curve(User):
         if User == 'N':
             Path_to_Data = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data/Data_' + Interesting_Obj_Names.iloc[i,0] +'.txt'
         elif User == 'C':
-            Path_to_Data =
+            Path_to_Data = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Grahams_Data/Data_' + Interesting_Obj_Names.iloc[i,0] +'.txt'
 
         #Read the data
         Data_for_obj = pd.read_table(Path_to_Data, sep=' ', header=None)
@@ -112,7 +112,7 @@ def Graham_Obj_Make_Light_Curve(User):
         if User == 'N':
             file_path_Light_Curve = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Graham_Object_Light_Curves/' + Interesting_Obj_Names.iloc[i,0] +'.jpg'
         elif User == 'C':
-            file_path_Light_Curve =
+            file_path_Light_Curve = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Graham_Object_Light_Curves/' + Interesting_Obj_Names.iloc[i,0] +'.jpg'
 
         #Save the plot
         plt.savefig(file_path_Light_Curve, bbox_inches='tight')
