@@ -12,9 +12,11 @@ all the Graham candidate objects.
 Inputs:
 state-3-2.dat file in the same directory as this script
 C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Graham_ID_Values.txt
+C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Graham_ID_Values.txt
 
 This will then create an image file (with its name being the object name):
 C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Graham_Output_Images/
+C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Graham_Output_Images_Values.txt
 
 Date Created: 20/12/2016
 Authors: Nicholas Kinsey, Christopher Conway
@@ -27,7 +29,7 @@ Object = ARGS[1]
 Object_Name = replace(Object, "_", " ")
 
 #Define the location to the output of the nested sampling procedure
-Data_Location = "C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data/state-3-2.dat"
+Data_Location = "C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Grahams_Data/state-3-2.dat"
 
 #Open the data file, created by the nested sampling prcedure
 post, state = open(deserialize, Data_Location)
@@ -60,7 +62,7 @@ ylabel("PSD")
 title("A PSD plot $iterations iterations")
 
 #Create a figure path, which includes the objects name and save the figure
-Figure_path = "C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Graham_Output_Images/"
+Figure_path = "C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Graham_Output_Images/"
 Figure_name = "PSD_Plot_" * Object_Name * ".jpg"
 Total_Figure_path = Figure_path * Figure_name
 savefig(Total_Figure_path)

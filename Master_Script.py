@@ -11,6 +11,7 @@ C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Graham
 This will then create a Data file:
 C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data/state-3-2.dat.txt
 C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data/state-3-2.dat.txt
+
 Date Created: 20/12/2016
 Authors: Nicholas Kinsey, Christopher Conway
 ----------------------------------------------------------------------------"""
@@ -25,7 +26,6 @@ def main():
     User = 'C'
 
     #Choose whether to anlyse Graham or Random objects
-
     Analyse_Random = 'N'
     Analyse_Graham = 'Y'
 
