@@ -32,8 +32,8 @@ def main():
     Analyse_Graham = 'N'
 
     #Set which objects to examine
-    R_iter_start = 120
-    R_iter_end = 130
+    R_iter_start = 150
+    R_iter_end = 152
     G_iter_start = 5
     G_iter_end = 12
 
