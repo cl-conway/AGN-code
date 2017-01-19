@@ -38,7 +38,6 @@ def Random_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
         if User == 'N':
             Random_IDs_path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_ID_Values.txt'
         elif User == 'C':
-<<<<<<< HEAD
             Random_IDs_path = ''
 
         #Write a file to check objects with scewed data
@@ -52,33 +51,6 @@ def Random_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
 
         #Load in all the random object data
         All_Random_Objects = pd.read_table(Random_IDs_path, sep=' ', header=None)
-=======
-            Path_to_Data =
-
-        #Read the data
-        Data_for_obj = pd.read_table(Path_to_Data, sep=' ', header=None)
-        Data_for_obj.columns = ['MJD', 'Mag', 'Magerr']
-
-        #Set the x,y,yerr values
-        Times = Data_for_obj[['MJD']].as_matrix().ravel()
-        Errors = Data_for_obj[['Magerr']].as_matrix().ravel()
-        Mag_orgs = Data_for_obj[['Mag']].as_matrix().ravel()
-
-        #Make the plot and format
-        plt.figure()
-        plt.errorbar(Times, Mag_orgs, Errors, fmt='.k')
-        plt.xlabel('Time(MJD)')
-        plt.ylabel('Magitude')
-        Title = 'Light Curve for ' + Interesting_Obj_Names.iloc[i,0] + ' (a random object)'
-        plt.title(Title)
-        plt.gca().invert_yaxis()
-
-        #Define the save file path
-        if User == 'N':
-            file_path_Light_Curve = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Random_Object_Light_Curves/' + Interesting_Obj_Names.iloc[i,0] +'.jpg'
-        elif User == 'C':
-            file_path_Light_Curve =
->>>>>>> 4861fbbbb52aaf663b0537bbace582ab377c358d
 
         for j in range(len(All_Random_Objects)):
             #Path to data
@@ -95,17 +67,9 @@ def Random_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
             Scewed_Data_Value = (Data_for_obj['MJD'].median()) / Data_for_obj['MJD'].max()
             Scewed_Data_Value = round(Scewed_Data_Value, 2)
 
-<<<<<<< HEAD
             #Only output if the data is scewed to one side
             if Scewed_Data_Value < 0.4 or Scewed_Data_Value > 0.6:
                 writing_file.write(All_Random_Objects.iloc[j,0] + ';' + str(Scewed_Data_Value) +'\n')
-=======
-    #Define path to interesting random objects
-    if User == 'N':
-        Interesting_Objects_path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Interesting_Grahams.txt'
-    elif User == 'C':
-        Interesting_Object_path = 'C:/Users/Christopher/Documents/UNI/Year 4/AGN-code/Project/Julia_Working_Directory/Interesting_Grahams.txt'
->>>>>>> 4861fbbbb52aaf663b0537bbace582ab377c358d
 
         #Close the writing file after for-loop completes
         writing_file.close()
@@ -117,7 +81,6 @@ def Random_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
         if User == 'N':
             Interesting_Objects_path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Interesting_Randoms.txt'
         elif User == 'C':
-<<<<<<< HEAD
             Interesting_Object_path = ''
 
         #Read the interesting object names in as pandas dataframe
@@ -166,33 +129,9 @@ def Graham_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
     if check_scewed_data == 'Y':
 
         #Define path to random objects
-=======
-            Path_to_Data = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Grahams_Data/Data_' + Interesting_Obj_Names.iloc[i,0] +'.txt'
-
-        #Read the data
-        Data_for_obj = pd.read_table(Path_to_Data, sep=' ', header=None)
-        Data_for_obj.columns = ['MJD', 'Mag', 'Magerr']
-
-        #Set the x,y,yerr values
-        Times = Data_for_obj[['MJD']].as_matrix().ravel()
-        Errors = Data_for_obj[['Magerr']].as_matrix().ravel()
-        Mag_orgs = Data_for_obj[['Mag']].as_matrix().ravel()
-
-        #Make the plot and format
-        plt.figure()
-        plt.errorbar(Times, Mag_orgs, Errors, fmt='.k')
-        plt.xlabel('Time(MJD)')
-        plt.ylabel('Magitude')
-        Title = 'Light Curve for ' + Interesting_Obj_Names.iloc[i,0] + ' (a Graham candidate)'
-        plt.title(Title)
-        plt.gca().invert_yaxis()
-
-        #Define the save file path
->>>>>>> 4861fbbbb52aaf663b0537bbace582ab377c358d
         if User == 'N':
             Graham_IDs_path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Graham_ID_Values.txt'
         elif User == 'C':
-<<<<<<< HEAD
             Graham_IDs_path = ''
 
         #Write a file to check objects with scewed data
@@ -200,9 +139,6 @@ def Graham_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
             writing_file = open('C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Scewed_Data_Objects_Graham.txt', 'w')
         if User == 'C':
             writing_file = open('C:/Users/Christopher/Documents/UNI/Year 4/Project/Julia_Working_Directory/Scewed_Data_Objects_Graham.txt', 'w')
-=======
-            file_path_Light_Curve = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Graham_Object_Light_Curves/' + Interesting_Obj_Names.iloc[i,0] +'.jpg'
->>>>>>> 4861fbbbb52aaf663b0537bbace582ab377c358d
 
         #Write the header of the created file
         writing_file.write('Name;Value\n')
