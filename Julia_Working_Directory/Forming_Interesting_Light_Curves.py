@@ -29,7 +29,7 @@ import math
 import pandas as pd
 import matplotlib.pyplot as plt
 
-def Random_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
+def Random_Obj_Make_Light_Curve(User, check_scewed_data, sigma_clip, sigma_level, form_light_curves):
 
     #Check value of the check_scewed_data variable
     if check_scewed_data == 'Y':
@@ -38,13 +38,13 @@ def Random_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
         if User == 'N':
             Random_IDs_path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_ID_Values.txt'
         elif User == 'C':
-            Random_IDs_path = ''
+            Random_IDs_path = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Randoms_ID_Values.txt'
 
         #Write a file to check objects with scewed data
         if User == 'N':
             writing_file = open('C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Scewed_Data_Objects_Random.txt', 'w')
         if User == 'C':
-            writing_file = open('C:/Users/Christopher/Documents/UNI/Year 4/Project/Julia_Working_Directory/Scewed_Data_Objects_Random.txt', 'w')
+            writing_file = open('C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Scewed_Data_Objects_Random.txt', 'w')
 
         #Write the header of the created file
         writing_file.write('Name;Value\n')
@@ -57,7 +57,7 @@ def Random_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
             if User == 'N':
                 Path_to_Data = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data/Data_' + All_Random_Objects.iloc[j,0] +'.txt'
             elif User == 'C':
-                Path_to_Data = ''
+                Path_to_Data = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Randoms_Data/Data_' + All_Random_Objects.iloc[j,0] +'.txt'
 
             #Read the data
             Data_for_obj = pd.read_table(Path_to_Data, sep=' ', header=None)
@@ -73,6 +73,34 @@ def Random_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
 
         #Close the writing file after for-loop completes
         writing_file.close()
+
+    if sigma_clip == 'Y':
+        #Define path to random objects
+        if User == 'N':
+            Random_IDs_path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_ID_Values.txt'
+        elif User == 'C':
+            Random_IDs_path = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Randoms_ID_Values.txt'
+
+        #Load in all the random object data
+        All_Random_Objects = pd.read_table(Random_IDs_path, sep=' ', header=None)
+
+        for j in range(len(All_Random_Objects)):
+            #Path to data
+            if User == 'N':
+                Path_to_Data = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Data/Data_' + All_Random_Objects.iloc[j,0] +'.txt'
+                Path_to_Clipped_Data = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Randoms_Clipped_Data/Clipped_Data_' + All_Random_Objects.iloc[j,0] +'.txt'
+            elif User == 'C':
+                Path_to_Data = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Randoms_Data/Data_' + All_Random_Objects.iloc[j,0] +'.txt'
+                Path_to_Clipped_Data = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Randoms_Clipped_Data/Clipped_Data_' + All_Random_Objects.iloc[j,0] +'.txt'
+
+
+            #Read the data
+            Data_for_obj = pd.read_table(Path_to_Data, sep=' ', header=None)
+            Data_for_obj.columns = ['MJD', 'Mag', 'Magerr']
+            median = Data_for_obj['Mag'].median()
+            Data_for_obj = Data_for_obj[abs(Data_for_obj['Mag'] - median) < sigma_level*Data_for_obj['Magerr']]
+            Data_for_obj.to_csv(Path_to_Clipped_Data, sep=' ')
+
 
     #Check value of the form_light_curves variable
     if form_light_curves == 'Y':
@@ -123,7 +151,7 @@ def Random_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
             #Close all open plots
             plt.close('all')
 
-def Graham_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
+def Graham_Obj_Make_Light_Curve(User, check_scewed_data, sigma_clip, sigma_level, form_light_curves):
 
     #Check value of the check_scewed_data variable
     if check_scewed_data == 'Y':
@@ -132,7 +160,7 @@ def Graham_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
         if User == 'N':
             Graham_IDs_path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Graham_ID_Values.txt'
         elif User == 'C':
-            Graham_IDs_path = ''
+            Graham_IDs_path = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Graham_ID_Values.txt'
 
         #Write a file to check objects with scewed data
         if User == 'N':
@@ -151,7 +179,7 @@ def Graham_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
             if User == 'N':
                 Path_to_Data = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data/Data_' + All_Graham_Objects.iloc[j,0] +'.txt'
             elif User == 'C':
-                Path_to_Data = ''
+                Path_to_Data = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Grahams_Data/Data_' + All_Graham_Objects.iloc[j,0] +'.txt''
 
             #Read the data
             Data_for_obj = pd.read_table(Path_to_Data, sep=' ', header=None)
@@ -167,6 +195,35 @@ def Graham_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
 
         #Close the writing file after for-loop completes
         writing_file.close()
+
+    #Check value of sigma_clip ie should we sigma clip the data
+    if sigma_clip == 'Y':
+        #Define path to random objects
+        if User == 'N':
+            Graham_IDs_path = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_ID_Values.txt'
+        elif User == 'C':
+            Graham_IDs_path = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Graham_ID_Values.txt'
+
+        #Load in all the random object data
+        All_Random_Objects = pd.read_table(Graham_IDs_path, sep=' ', header=None)
+
+        for j in range(len(All_Random_Objects)):
+            #Path to data
+            if User == 'N':
+                Path_to_Data = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Data/Data_' + All_Random_Objects.iloc[j,0] +'.txt'
+                Path_to_Clipped_Data = 'C:/Users/User/Documents/University/Year 4/Project/Julia_Working_Directory/Grahams_Clipped_Data/Clipped_Data_' + All_Random_Objects.iloc[j,0] +'.txt'
+            elif User == 'C':
+                Path_to_Data = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Grahams_Data/Data_' + All_Random_Objects.iloc[j,0] +'.txt'
+                Path_to_Clipped_Data = 'C:/Users/Christopher/Documents/UNI/Year 4/Project/AGN-code/Julia_Working_Directory/Grahams_Clipped_Data/Clipped_Data_' + All_Random_Objects.iloc[j,0] +'.txt'
+
+
+            #Read the data
+            Data_for_obj = pd.read_table(Path_to_Data, sep=' ', header=None)
+            Data_for_obj.columns = ['MJD', 'Mag', 'Magerr']
+            median = Data_for_obj['Mag'].median()
+            #remove all points more than 5 sigma from median
+            Data_for_obj = Data_for_obj[abs(Data_for_obj['Mag'] - median) < sigma_level*Data_for_obj['Magerr']]
+            Data_for_obj.to_csv(Path_to_Clipped_Data)
 
     #Check value of the form_light_curves variable
     if form_light_curves == 'Y':
@@ -220,16 +277,17 @@ def Graham_Obj_Make_Light_Curve(User, check_scewed_data, form_light_curves):
 def main():
 
     #Set the User
-    User = 'N'
+    User = 'C'
 
     #Decide what to look at
-    Check_Scewed_Data = 'Y'
-    Form_Light_Curves = 'Y'
+    Check_Scewed_Data = 'N'
+    Sigma_Clip, Sigma_Level = 'Y', 5
+    Form_Light_Curves = 'N'
 
     #Random Objects
-    Random_Obj_Make_Light_Curve(User, Check_Scewed_Data, Form_Light_Curves)
+    Random_Obj_Make_Light_Curve(User, Check_Scewed_Data, Sigma_Clip, Sigma_Level, Form_Light_Curves)
 
     #Graham Objects
-    Graham_Obj_Make_Light_Curve(User, Check_Scewed_Data, Form_Light_Curves)
+    Graham_Obj_Make_Light_Curve(User, Check_Scewed_Data,Sigma_Clip, Sigma_Level, Form_Light_Curves)
 
 main()
